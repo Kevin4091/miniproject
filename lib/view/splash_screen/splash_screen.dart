@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:miniproject/view/question_screen/question_screen.dart';
+import 'package:miniproject/view/home/home.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => QnsQuiz(context),
+            builder: (context) => const HomePage(),
           ));
     });
     super.initState();

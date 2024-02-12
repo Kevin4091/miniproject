@@ -1,31 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:miniproject/model/custom_progress_bar/custom_progress_bar.dart';
+import 'package:miniproject/utils/biology_db.dart';
 import 'package:miniproject/utils/color.dart';
-import 'package:miniproject/utils/question_db.dart';
-import 'package:miniproject/view/result_screen/result_screen.dart';
+import 'package:miniproject/view/result_screen/bioresult.dart';
 
-class QnsQuiz extends StatefulWidget {
-  const QnsQuiz(BuildContext context, {super.key});
+class BioQns extends StatefulWidget {
+  const BioQns(BuildContext context, {super.key});
 
   @override
-  State<QnsQuiz> createState() => _QnsQuizState();
+  State<BioQns> createState() => _BioQnsState();
 }
 
-class _QnsQuizState extends State<QnsQuiz> {
+class _BioQnsState extends State<BioQns> {
+  late double persantage = 0.0;
   int questinindex = 0;
   int? selectedAnswerIndex;
   int righAnswer = 0;
+  int skipCount = 0;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           backgroundColor: const Color(0xff1c1c1c),
+          leading: const SizedBox(),
+          title: CustomProgressBar(
+            height: 20,
+            width: 200,
+            progress: persantage,
+          ),
           actions: [
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                '${questinindex + 1}/ ${QuestionDb.quizquestions.length}',
+                '${questinindex + 1}/ ${BiologyDb.biologydbquestions.length}',
                 style: TextStyle(color: ColorConstant.mycustomblue),
               ),
             )
@@ -46,7 +56,7 @@ class _QnsQuizState extends State<QnsQuiz> {
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: Text(
-                      QuestionDb.quizquestions[questinindex]["question"],
+                      BiologyDb.biologydbquestions[questinindex]["question"],
                       style: TextStyle(
                           color: ColorConstant.backgroundwhite,
                           fontWeight: FontWeight.bold),
@@ -64,8 +74,8 @@ class _QnsQuizState extends State<QnsQuiz> {
                       height: 20,
                     );
                   },
-                  itemCount:
-                      QuestionDb.quizquestions[questinindex]["options"].length,
+                  itemCount: BiologyDb
+                      .biologydbquestions[questinindex]["options"].length,
                   itemBuilder: (context, index) {
                     return InkWell(
                       onTap: () {
@@ -73,7 +83,7 @@ class _QnsQuizState extends State<QnsQuiz> {
                           selectedAnswerIndex = index;
                           if (selectedAnswerIndex != null &&
                               selectedAnswerIndex ==
-                                  QuestionDb.quizquestions[questinindex]
+                                  BiologyDb.biologydbquestions[questinindex]
                                       ["answer"]) {
                             righAnswer++;
                           }
@@ -93,7 +103,7 @@ class _QnsQuizState extends State<QnsQuiz> {
                           children: [
                             Expanded(
                               child: Text(
-                                QuestionDb.quizquestions[questinindex]
+                                BiologyDb.biologydbquestions[questinindex]
                                     ["options"][index],
                                 style: TextStyle(
                                     color: ColorConstant.backgroundwhite),
@@ -118,9 +128,13 @@ class _QnsQuizState extends State<QnsQuiz> {
                 ),
                 InkWell(
                   onTap: () {
+                    if (selectedAnswerIndex == null) {
+                      skipCount++;
+                    }
                     selectedAnswerIndex = null;
-
-                    if (questinindex < QuestionDb.quizquestions.length - 1) {
+                    persantage += 0.1;
+                    if (questinindex <
+                        BiologyDb.biologydbquestions.length - 1) {
                       questinindex++;
 
                       setState(() {});
@@ -128,8 +142,9 @@ class _QnsQuizState extends State<QnsQuiz> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ResultScreen(
+                            builder: (context) => BioResult(
                               rightAnswer: righAnswer,
+                              skipCount: skipCount,
                             ),
                           ));
                     }
@@ -160,12 +175,12 @@ class _QnsQuizState extends State<QnsQuiz> {
 
   Color getRightAnswer(int index) {
     if (selectedAnswerIndex != null &&
-        index == QuestionDb.quizquestions[questinindex]["answer"]) {
+        index == BiologyDb.biologydbquestions[questinindex]["answer"]) {
       return ColorConstant.mycustomgreen;
     }
     if (selectedAnswerIndex == index) {
       if (selectedAnswerIndex ==
-          QuestionDb.quizquestions[questinindex]["answer"]) {
+          BiologyDb.biologydbquestions[questinindex]["answer"]) {
         return ColorConstant.mycustomgreen;
       } else {
         return ColorConstant.mycustomred;
@@ -177,7 +192,7 @@ class _QnsQuizState extends State<QnsQuiz> {
 
   Widget? iconshower(int index) {
     if (selectedAnswerIndex != null &&
-        index == QuestionDb.quizquestions[questinindex]["answer"]) {
+        index == BiologyDb.biologydbquestions[questinindex]["answer"]) {
       return Icon(
         Icons.done,
         size: 10,
@@ -187,7 +202,7 @@ class _QnsQuizState extends State<QnsQuiz> {
 
     if (selectedAnswerIndex == index) {
       if (selectedAnswerIndex ==
-          QuestionDb.quizquestions[questinindex]["answer"]) {
+          BiologyDb.biologydbquestions[questinindex]["answer"]) {
         return const Material();
       } else {
         return Icon(
